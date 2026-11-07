@@ -8,4 +8,4 @@ export const authClient = createAuthClient({
     inferAdditionalFields<typeof auth>(), // এটি additionalFields (যেমন: role) অটোমেটিক ক্লায়েন্টে টাইপ-সেফ করে
   ],
 })
-export const { signIn, signUp, useSession } = authClient
+export const { signIn, signUp, signOut , useSession } = authClient
