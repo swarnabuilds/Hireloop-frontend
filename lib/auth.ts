@@ -11,6 +11,17 @@ export const auth = betterAuth({
     enabled: true,
   },
 
+   user: {
+  additionalFields: {
+    role: {
+      type: "string", // ডাটাবেজে স্ট্রিং হিসেবে সেভ হবে
+      required: false,
+      defaultValue: "seeker",
+      input: true, // ক্লায়েন্ট (Sign Up Form) থেকে ডাটা রিসিভ করার অনুমতি
+    },
+  },
+},
+
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string, 
