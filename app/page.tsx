@@ -1,12 +1,11 @@
 import { Navbar } from "@/components/Navbar"
+import { Hero } from "@/components/Hero"
 
 export default function Page() {
   return (
-    <div className="relative min-h-svh overflow-hidden bg-neutral-950">
-      {/* subtle diagonal texture like the design */}
-       
-
+    <div className="min-h-svh overflow-x-hidden bg-black">
       <Navbar />
+      <Hero />
     </div>
   )
 }
