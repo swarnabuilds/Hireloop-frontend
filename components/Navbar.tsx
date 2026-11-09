@@ -1,10 +1,11 @@
+
 "use client"
 
 import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Menu, LogOut } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,11 +18,39 @@ import {
 
 import { useSession, signOut } from "@/lib/auth-client"
 
+// Navigation Links
 const navLinks = [
-  { label: "Browse Jobs", href: "/jobs" },
-  { label: "Company", href: "/company" },
-  { label: "Pricing", href: "#pricing" },
+  { id: 1, label: "Browse Jobs", href: "/jobs" },
+  { id: 2, label: "Company", href: "/company" },
+  { id: 3, label: "Pricing", href: "#pricing" },
 ]
+
+// Reusable MenuLinks Component
+interface MenuLinksProps {
+  mobile?: boolean
+  onLinkClick?: () => void
+}
+
+function MenuLinks({ mobile = false, onLinkClick }: MenuLinksProps) {
+  return (
+    <>
+      {navLinks.map((link) => (
+        <Link
+          key={link.id}
+          href={link.href}
+          onClick={onLinkClick}
+          className={
+            mobile
+              ? "text-base text-zinc-300 transition-colors hover:text-white"
+              : "transition-colors duration-200 hover:text-white"
+          }
+        >
+          {link.label}
+        </Link>
+      ))}
+    </>
+  )
+}
 
 export function Navbar() {
   const [open, setOpen] = React.useState(false)
@@ -31,6 +60,12 @@ export function Navbar() {
   // Get Session
   const { data: session, isPending } = useSession()
   const user = session?.user
+
+  // User Role
+  const userRole = (user as any)?.role || "seeker"
+
+  // Dashboard URL
+  const dashboardUrl = `/dashboard/${userRole}`
 
   // User Avatar Initial
   const userInitial =
@@ -68,16 +103,10 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden items-center space-x-8 md:flex">
+
+            {/* Reusable Menu Links */}
             <div className="flex items-center space-x-6 text-sm text-zinc-300">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="transition-colors duration-200 hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <MenuLinks />
             </div>
 
             {/* Divider & Action Buttons */}
@@ -85,6 +114,15 @@ export function Navbar() {
 
               {isPending ? null : user ? (
                 <>
+                  {/* Dashboard Link */}
+                  <Link
+                    href={dashboardUrl}
+                    className="flex items-center gap-2 text-sm font-medium text-blue-400 transition-colors hover:text-blue-300"
+                  >
+                    <LayoutDashboard className="size-4" />
+                    Dashboard
+                  </Link>
+
                   {/* User Avatar & Information */}
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-full border border-indigo-500/30 bg-indigo-600/20 text-sm font-bold text-indigo-400">
@@ -134,7 +172,7 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Navigation (Hamburger Menu) */}
+          {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger
@@ -170,16 +208,10 @@ export function Navbar() {
 
                   {/* Mobile Navigation Links */}
                   <div className="flex flex-col space-y-4">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setOpen(false)}
-                        className="text-base text-zinc-300 transition-colors hover:text-white"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
+                    <MenuLinks
+                      mobile
+                      onLinkClick={() => setOpen(false)}
+                    />
                   </div>
 
                   {/* Mobile Authentication */}
@@ -187,6 +219,16 @@ export function Navbar() {
 
                     {isPending ? null : user ? (
                       <>
+                        {/* Mobile Dashboard Link */}
+                        <Link
+                          href={dashboardUrl}
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-3 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 text-sm font-medium text-blue-400 transition-colors hover:bg-blue-500/20"
+                        >
+                          <LayoutDashboard className="size-5" />
+                          Dashboard
+                        </Link>
+
                         {/* Mobile User Information */}
                         <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-3">
                           <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-indigo-500/30 bg-indigo-600/20 text-sm font-bold text-indigo-400">
