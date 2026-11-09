@@ -62,8 +62,8 @@ const menuItemByRole: Record<UserRole, MenuItem[]> = {
 
   recruiter: [
     { id: 1, name: "Dashboard", url: "/dashboard/recruiter", icon: LayoutDashboard },
-    { id: 2, name: "Post a Job", url: "/dashboard/recruiter/post-job", icon: PlusCircle },
-    { id: 3, name: "My Job Listings", url: "/dashboard/recruiter/my-jobs", icon: Briefcase },
+    { id: 3, name: "Manage Jobs", url: "/dashboard/recruiter/jobs", icon: Briefcase },
+    { id: 2, name: "Add Job", url: "/dashboard/recruiter/add-job", icon: PlusCircle },
     { id: 4, name: "Applications", url: "/dashboard/recruiter/applications", icon: FileText },
     { id: 5, name: "Manage Candidates", url: "/dashboard/recruiter/candidates", icon: Users },
     { id: 6, name: "Company Profile", url: "/dashboard/recruiter/company", icon: Building },
@@ -75,7 +75,6 @@ const menuItemByRole: Record<UserRole, MenuItem[]> = {
   admin: [
     { id: 1, name: "Dashboard", url: "/dashboard/admin", icon: LayoutDashboard },
     { id: 2, name: "Manage Users", url: "/dashboard/admin/users", icon: Users },
-    { id: 3, name: "Manage Jobs", url: "/dashboard/admin/manage-jobs", icon: Briefcase },
     { id: 4, name: "Manage Companies", url: "/dashboard/admin/companies", icon: Building },
     { id: 5, name: "Manage Applications", url: "/dashboard/admin/applications", icon: FileText },
     { id: 6, name: "Categories", url: "/dashboard/admin/categories", icon: Tags },
