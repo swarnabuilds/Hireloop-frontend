@@ -9,6 +9,23 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Loader2, Send } from "lucide-react"
 import { toast } from "sonner"
+import { createJob } from "@/lib/actions/jobs"
+
+// Job Data type interface
+export interface JobFormData {
+  title: string
+  companyName: string
+  category: string
+  jobType: string
+  isRemote: boolean
+  location: string
+  deadline: string
+  minSalary: string
+  maxSalary: string
+  salaryFrequency: string
+  responsibilities: string
+  qualifications: string
+}
 
 export default function AddJobPage() {
   const router = useRouter()
@@ -16,47 +33,54 @@ export default function AddJobPage() {
   const [jobType, setJobType] = useState("Full-time")
   const [isRemote, setIsRemote] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setLoading(true);
 
-    // Collect data using standard FormData from the form element
-    const formData = new FormData(e.currentTarget)
+  try {
+    const formData = new FormData(e.currentTarget);
 
-    // Extracting individual values from formData
-    const jobData = {
-      title: formData.get("title"),
-      companyName: formData.get("companyName"),
-      category: formData.get("category"),
-      jobType: jobType, // State value for job type selection
-      isRemote: isRemote, // State value for remote switch
-      location: formData.get("location"),
-      deadline: formData.get("deadline"),
-      minSalary: formData.get("minSalary"),
-      maxSalary: formData.get("maxSalary"),
-      salaryFrequency: formData.get("salaryFrequency"),
-      responsibilities: formData.get("responsibilities"),
-      qualifications: formData.get("qualifications"),
+    const jobData: JobFormData = {
+      title: formData.get("title")?.toString() || "",
+      companyName: formData.get("companyName")?.toString() || "",
+      category: formData.get("category")?.toString() || "",
+      jobType,
+      isRemote,
+      location: formData.get("location")?.toString() || "",
+      deadline: formData.get("deadline")?.toString() || "",
+      minSalary: formData.get("minSalary")?.toString() || "",
+      maxSalary: formData.get("maxSalary")?.toString() || "",
+      salaryFrequency: formData.get("salaryFrequency")?.toString() || "",
+      responsibilities: formData.get("responsibilities")?.toString() || "",
+      qualifications: formData.get("qualifications")?.toString() || "",
+    };
+
+    //api call
+    const result = await createJob(jobData);
+
+    if (!result.success) {
+      throw new Error(result.message || "Job insertion failed!");
     }
 
-    console.log("Collected Job Data from FormData:", jobData)
+    toast.success("Job posted successfully!", {
+      description: "Your job has been posted successfully.",
+    });
 
-    try {
-      // Simulate API call to save data in database
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+    router.push("/dashboard/recruiter/jobs");
 
-      toast.success("Job posted successfully!", {
-        description: "Your new job listing is now live.",
-      })
-      
-      router.push("/dashboard/recruiter/jobs")
-    } catch (error) {
-      toast.error("Failed to post job. Please try again.")
-    } finally {
-      setLoading(false)
-    }
+  } catch (error) {
+    console.error("Create Job Error:", error);
+
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Failed to post job. Please try again."
+    );
+
+  } finally {
+    setLoading(false);
   }
-
+};
   // Common styling for inputs/selects to match dark UI
   const inputStyle =
     "h-11 rounded-xl border-zinc-800 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
