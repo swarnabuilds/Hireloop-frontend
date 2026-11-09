@@ -21,3 +21,16 @@ export const deleteJob = async (id: string) => {
   });
   return res.json();
 };
+
+
+export const updateJob = async (id: string, data:  JobFormData) => {
+  const res = await fetch(`${BASE_URI}/jobs/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+};

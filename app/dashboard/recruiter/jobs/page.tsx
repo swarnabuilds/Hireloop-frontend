@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { DeleteJobDialog } from "@/app/components/DeleteJobDialog";
+import { UpdateJobDialog } from "./UpdateDialoug";
 
 export interface Job {
   _id: string;
@@ -258,16 +259,7 @@ export default async function ManageJobsPage() {
                   </button>
 
                   {/* Update Job */}
-                  <Link
-                    href={`/dashboard/recruiter/edit-job/${job._id}`}
-                  >
-                    <button
-                      className="rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-indigo-400 transition-all hover:bg-zinc-800 hover:text-indigo-300"
-                      title="Update Job"
-                    >
-                      <Pencil className="size-4" />
-                    </button>
-                  </Link>
+                 <UpdateJobDialog job={job} />
 
                   {/* Delete Job */}
                   <DeleteJobDialog job={job} />
