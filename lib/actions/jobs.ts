@@ -34,3 +34,13 @@ export const updateJob = async (id: string, data:  JobFormData) => {
 
   return res.json();
 };
+
+
+//deatils
+export const getJobById = async (id: string) => {
+  const res = await fetch(`${BASE_URI}/jobs/${id}`, {
+    cache: "no-store",
+  });
+
+  return res.json();
+};

@@ -251,12 +251,14 @@ export default async function ManageJobsPage() {
               <td className="px-4 py-4 text-right whitespace-nowrap">
                 <div className="flex items-center justify-end gap-2.5">
                   {/* View Details */}
-                  <button
-                    className="rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white"
-                    title="View Details"
-                  >
-                    <Eye className="size-4" />
-                  </button>
+                  {/* View Details Link */}
+<Link
+  href={`/dashboard/recruiter/jobs/${job._id}`}
+  className="rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 transition-all hover:bg-zinc-800 hover:text-white"
+  title="View Details"
+>
+  <Eye className="size-4" />
+</Link>
 
                   {/* Update Job */}
                  <UpdateJobDialog job={job} />
