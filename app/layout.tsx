@@ -24,7 +24,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
     >
-      <body>
+      <body className="bg-[#0f172a] text-slate-100">
               <Navbar />
         {children}
         <Toaster/>

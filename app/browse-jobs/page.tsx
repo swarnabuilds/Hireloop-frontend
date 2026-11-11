@@ -1,6 +1,7 @@
 import { getJobs } from "@/lib/api/jobs";
 import { DollarSign, Briefcase, Bookmark } from "lucide-react";
 import JobFilters from "../components/JobFilters";
+import Link from "next/link";
 
 export default async function BrowseJobsPage({
   searchParams,
@@ -37,14 +38,11 @@ export default async function BrowseJobsPage({
                   className="bg-[#1e293b] p-6 rounded-xl border border-slate-800 hover:border-slate-700 transition flex justify-between items-start"
                 >
                   <div className="space-y-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-100 hover:text-blue-400 transition cursor-pointer">
-                        {job.title}
-                      </h3>
-                      <p className="text-sm text-slate-400 mt-1">
-                        {job.companyName} • {job.location} {job.isRemote && "(Remote)"}
-                      </p>
-                    </div>
+                    <Link href={`/browse-jobs/${job._id}`} className="block">
+  <h3 className="text-lg font-semibold text-slate-100 hover:text-blue-400 transition cursor-pointer">
+    {job.title}
+  </h3>
+</Link>
 
                     {/* Badges */}
                     <div className="flex flex-wrap gap-2 text-xs">
