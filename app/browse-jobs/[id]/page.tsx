@@ -4,13 +4,13 @@ import {
   MapPin, 
   Briefcase, 
   DollarSign, 
-  Clock, 
   Bookmark, 
   CheckCircle2, 
   Building2, 
   Calendar
 } from "lucide-react";
 import { getJobById } from "@/lib/actions/jobs";
+import ApplyButton from "@/app/components/ApplyButton";
 
 export default async function JobDetailsPage({
   params,
@@ -19,7 +19,7 @@ export default async function JobDetailsPage({
 }) {
   const { id } = await params;
   
-  // ১. নির্দিষ্ট আইডি দিয়ে ডাটা ফেচ করা
+  // নির্দিষ্ট আইডি দিয়ে জব ডাটা ফেচ করা
   const job = await getJobById(id);
 
   if (!job) {
@@ -51,7 +51,6 @@ export default async function JobDetailsPage({
         {/* Top Header Card */}
         <div className="bg-[#1e293b] border border-slate-800 p-6 md:p-8 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-start gap-5">
-            {/* ডাইনামিক নেম অ্যাভাটার */}
             <div className="w-16 h-16 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-2xl font-bold text-blue-400 shadow-inner uppercase shrink-0">
               {job.companyName ? job.companyName.charAt(0) : "H"}
             </div>
@@ -78,9 +77,13 @@ export default async function JobDetailsPage({
             <button className="p-3 bg-[#0f172a] border border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl transition cursor-pointer">
               <Bookmark className="w-5 h-5" />
             </button>
-            <button className="flex-1 md:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition cursor-pointer">
-              Apply Now
-            </button>
+            
+            {/* 👈 এখানে ApplyButton কম্পোনেন্টটি পাস করে দেওয়া হলো, যা নিজেই useSession দিয়ে লগইন চেক করবে */}
+            <ApplyButton 
+  jobId={job._id} 
+  jobTitle={job.title} 
+  companyName={job.companyName} 
+/>
           </div>
         </div>
 
@@ -131,7 +134,6 @@ export default async function JobDetailsPage({
           {/* Left Side: Responsibilities & Qualifications */}
           <div className="lg:col-span-2 space-y-8 bg-[#1e293b] border border-slate-800 p-6 md:p-8 rounded-2xl shadow-xl">
             
-            {/* Responsibilities */}
             <div className="space-y-3">
               <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-3">
                 Key Responsibilities
@@ -149,7 +151,6 @@ export default async function JobDetailsPage({
               </div>
             </div>
 
-            {/* Qualifications / Requirements */}
             <div className="space-y-3">
               <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-3">
                 Qualifications & Requirements
@@ -171,13 +172,12 @@ export default async function JobDetailsPage({
 
           </div>
 
-          {/* Right Side: Clean Company Overview */}
+          {/* Right Side: Company Overview */}
           <div className="lg:col-span-1 bg-[#1e293b] border border-slate-800 p-6 rounded-2xl shadow-xl space-y-6">
             <h3 className="text-lg font-bold text-slate-100 border-b border-slate-800 pb-3 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-blue-400" /> Company Overview
             </h3>
 
-            {/* কোম্পানির নামের ওপর ভিত্তি করে সুন্দর ডাইনামিক কার্ড */}
             <div className="w-full h-36 bg-gradient-to-br from-blue-950/60 to-[#0f172a] border border-slate-700 rounded-xl flex flex-col items-center justify-center text-slate-300 gap-2 p-4 text-center shadow-inner">
               <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-xl font-bold text-blue-400 uppercase">
                 {job.companyName ? job.companyName.charAt(0) : "C"}
@@ -185,8 +185,7 @@ export default async function JobDetailsPage({
               <span className="text-base font-bold text-slate-100 tracking-wide">{job.companyName}</span>
             </div>
 
-            {/* শুধুমাত্র ডাটাবেজে থাকা রিয়েল ফিল্ডগুলোর লিস্ট */}
-            <div className="space-y-3 text-sm">
+            <div className="space-y-4 text-sm">
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <span className="text-slate-400">Category</span>
                 <span className="font-semibold text-slate-200">{job.category}</span>
@@ -195,7 +194,10 @@ export default async function JobDetailsPage({
                 <span className="text-slate-400">Location</span>
                 <span className="font-semibold text-slate-200">{job.location}</span>
               </div>
-               
+              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                <span className="text-slate-400">Application Deadline</span>
+                <span className="font-semibold text-slate-200">{job.deadline || "N/A"}</span>
+              </div>
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <span className="text-slate-400">Workplace</span>
                 <span className="font-semibold text-slate-200">{job.isRemote ? "Remote" : "On-site"}</span>

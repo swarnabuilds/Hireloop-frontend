@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation" // 👈 ১. useSearchParams ইমপোর্ট করা হলো
 import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +13,11 @@ import { toast } from "sonner" // Shadcn Sonner Toast
 
 export default function SignInPage() {
   const router = useRouter()
+  const searchParams = useSearchParams() // 👈 ২. searchParams হুক ডিক্লেয়ার করা হলো
+  
+  //  ৩. URL থেকে callbackUrl ধরা (না থাকলে ডিফল্টভাবে "/" এ যাবে)
+  const callbackUrl = searchParams.get("callbackUrl") || "/"
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -28,7 +33,7 @@ export default function SignInPage() {
       {
         email,
         password,
-        callbackURL: "/",
+        callbackURL: callbackUrl, // 👈 ৪. স্ট্যাটিক "/" এর বদলে ডায়নামিক callbackUrl বসানো হলো
       },
       {
         onSuccess: () => {
@@ -36,7 +41,7 @@ export default function SignInPage() {
           toast.success("Signed in successfully!", {
             description: "Welcome back to HireLoop.",
           })
-          router.push("/")
+          router.push(callbackUrl) // 👈 ৫. সফল লগইনের পর নির্দিষ্ট callbackUrl-এ রিডাইরেক্ট করবে
         },
         onError: (ctx) => {
           setLoading(false)
@@ -135,7 +140,7 @@ export default function SignInPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-11 rounded-xl bg-indigo-600 font-medium text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 transition-all"
+            className="w-full h-11 rounded-xl bg-indigo-600 font-medium text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
           >
             {loading ? (
               <>
