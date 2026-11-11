@@ -20,7 +20,7 @@ import { useSession, signOut } from "@/lib/auth-client"
 
 // Navigation Links
 const navLinks = [
-  { id: 1, label: "Browse Jobs", href: "/jobs" },
+  { id: 1, label: "Browse Jobs", href: "/browse-jobs" },
   { id: 2, label: "Company", href: "/company" },
   { id: 3, label: "Pricing", href: "#pricing" },
 ]
