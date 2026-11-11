@@ -52,7 +52,7 @@ const menuItemByRole: Record<UserRole, MenuItem[]> = {
   seeker: [
     { id: 1, name: "Dashboard", url: "/dashboard/seeker", icon: LayoutDashboard },
     { id: 2, name: "Browse Jobs", url: "/dashboard/seeker/jobs", icon: Briefcase },
-    { id: 3, name: "Applied Jobs", url: "/dashboard/seeker/applied-jobs", icon: FileText },
+    { id: 3, name: "Applied Jobs", url: "/dashboard/seeker/applications", icon: FileText },
     { id: 4, name: "Saved Jobs", url: "/dashboard/seeker/saved-jobs", icon: Bookmark },
     { id: 5, name: "My Resume", url: "/dashboard/seeker/resume", icon: FileText },
     { id: 6, name: "My Profile", url: "/dashboard/seeker/profile", icon: User },
