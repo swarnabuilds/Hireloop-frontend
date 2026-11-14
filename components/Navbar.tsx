@@ -31,6 +31,13 @@ interface MenuLinksProps {
   onLinkClick?: () => void
 }
 
+interface User {
+  id: string
+  name?: string | null
+  email: string
+  role?: string
+}
+
 function MenuLinks({ mobile = false, onLinkClick }: MenuLinksProps) {
   return (
     <>
@@ -62,7 +69,7 @@ export function Navbar() {
   const user = session?.user
 
   // User Role
-  const userRole = (user as any)?.role || "seeker"
+ const userRole = (user as User | undefined)?.role || "seeker"
 
   // Dashboard URL
   const dashboardUrl = `/dashboard/${userRole}`

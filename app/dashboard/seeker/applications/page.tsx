@@ -2,14 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
+import { Search, Download, Loader2 } from "lucide-react";
 import { useSession } from "@/lib/auth-client"; 
 import { getUserApplications } from "@/lib/actions/application"; 
+
+// অ্যাপ্লিকেশন অবজেক্টের জন্য সঠিক টাইপ ইন্টারফেস
+interface ApplicationItem {
+  _id: string;
+  jobTitle?: string;
+  companyName?: string;
+  status?: string;
+  createdAt?: string;
+  appliedAt?: string;
+  date?: string;
+  [key: string]: unknown; // অতিরিক্ত যেকোনো প্রপার্টি হ্যান্ডেল করার জন্য
+}
 
 export default function SeekerApplicationsPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [applications, setApplications] = useState<any[]>([]);
+  
+  // any এর পরিবর্তে সঠিক ApplicationItem টাইপ ব্যবহার করা হয়েছে
+  const [applications, setApplications] = useState<ApplicationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -20,8 +34,8 @@ export default function SeekerApplicationsPage() {
       setLoading(true);
       const result = await getUserApplications(session.user.id);
       
-      if (result.success) {
-        setApplications(result.data);
+      if (result.success && Array.isArray(result.data)) {
+        setApplications(result.data as ApplicationItem[]);
       }
       setLoading(false);
     }
@@ -149,7 +163,7 @@ export default function SeekerApplicationsPage() {
                       
                       {/* ডেট ফরম্যাটিং */}
                       <td className="py-4 px-6 text-slate-400">
-                        {rawDate ? (
+                        {rawDate && typeof rawDate === "string" ? (
                           new Date(rawDate).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "short",
@@ -160,7 +174,7 @@ export default function SeekerApplicationsPage() {
                         )}
                       </td>
 
-                      {/* স্ট্যাটাস অনুযায়ী আকর্ষণীয় কালার ব্যাজ */}
+                      {/* স্ট্যাটাস অনুযায়ী আকর্ষণীয় কালার ব্যাজ */}
                       <td className="py-4 px-6">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase border shadow-sm ${
                           statusLower === "shortlisted" 
@@ -175,7 +189,7 @@ export default function SeekerApplicationsPage() {
                             ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
                             : statusLower === "applied"
                             ? "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
-                            : "bg-yellow-500/15 text-yellow-400 border-yellow-500/30 animate-pulse" // Pending স্ট্যাটাসের জন্য একটু ইউনিক ও আই ক্যাচি কালার
+                            : "bg-yellow-500/15 text-yellow-400 border-yellow-500/30 animate-pulse"
                         }`}>
                           {currentStatus}
                         </span>

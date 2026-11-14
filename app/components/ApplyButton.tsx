@@ -1,9 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client"; 
 import { toast } from "sonner";
-import { applyToJob } from "@/lib/actions/application";
+import { applyToJob, getApplicationsCount } from "@/lib/actions/application";
 
 interface ApplyButtonProps {
   jobId: string;
@@ -11,63 +12,73 @@ interface ApplyButtonProps {
   companyName: string;
 }
 
+// সেশন ইউজারের জন্য সঠিক টাইপ ইন্টারফেস
+interface CustomUser {
+  id: string;
+  email: string;
+  name: string;
+  role?: "seeker" | "recruiter" | "admin";
+}
+
 export default function ApplyButton({ jobId, jobTitle, companyName }: ApplyButtonProps) {
   const router = useRouter();
   const { data: session, isPending } = useSession();
+  const [applicantCount, setApplicantCount] = useState<number>(0);
+
+  // সেশন থেকে ইউজার বের করা উইদাউট 'any'
+  const user = session?.user as CustomUser | undefined;
+
+  // ইউজারের মোট আবেদন সংখ্যা চেক করা
+  useEffect(() => {
+    if (!user?.id) return;
+    getApplicationsCount(`userId=${user.id}`).then((res) => {
+      if (res && typeof res.count === "number") setApplicantCount(res.count);
+    });
+  }, [user?.id]);
 
   const handleApplyClick = async () => {
     if (isPending) return;
 
-    // ১. ইউজার লগইন করা না থাকলে সাইন-ইন পেজে রিডাইরেক্ট করা
-    if (!session || !session.user) {
-      toast.error("Authentication Required", {
-        description: "Please sign in first to apply for this job.",
-      });
+    if (!session || !user) {
+      toast.error("Please sign in first.");
       router.push(`/sign-in?callbackUrl=/browse-jobs/${jobId}`);
       return;
     }
 
-    // ২. ইউজার রোল seeker না হলে ব্লক করা
-    const userRole = (session.user as any)?.role;
-    if (userRole && userRole !== "seeker") {
-      toast.error("Access Denied", {
-        description: "Only job seekers are allowed to apply for jobs.",
-      });
+    // ১. আবেদন 6 বা তার বেশি হলে পেমেন্ট পেজে রিডাইরেক্ট করবে
+    if (applicantCount >= 6) {
+      toast.info("Free limit reached. Please complete payment.");
+      router.push("/payment"); 
       return;
     }
 
-    // ৩. backend-এ applyToJob ফাংশন কল করে ডাটা পাঠানো
+    // ২. না হলে সরাসরি আবেদন সাবমিট হবে
     const result = await applyToJob({
       jobId,
       jobTitle,
       companyName,
-      userId: session.user.id,
-      userEmail: session.user.email,
-      userName: session.user.name,
+      userId: user.id,
+      userEmail: user.email,
+      userName: user.name,
     });
 
     if (!result.success) {
-      toast.error("Application Failed", {
-        description: result.message,
-      });
+      toast.error(result.message || "Failed to apply");
       return;
     }
 
-    // ৪. সাকসেস টোস্ট দেখানো এবং ব্রাউজ জবস পেজে রিডাইরেক্ট করা
-    toast.success("Application Submitted!", {
-      description: `Successfully applied for ${jobTitle} at ${companyName}.`,
-    });
-
-    router.push("/browse-jobs");
+    setApplicantCount((prev) => prev + 1);
+    toast.success("Application successful!");
+    router.refresh();
   };
 
   return (
     <button 
       onClick={handleApplyClick}
       disabled={isPending}
-      className="flex-1 md:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition cursor-pointer disabled:opacity-50"
+      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition cursor-pointer disabled:opacity-50"
     >
-      {isPending ? "Checking..." : "Apply Now"}
+      {applicantCount >= 10 ? "Pay & Apply" : "Apply Now"}
     </button>
   );
 }
