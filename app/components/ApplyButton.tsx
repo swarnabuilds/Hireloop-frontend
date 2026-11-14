@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client"; 
 import { toast } from "sonner";
 import { applyToJob, getApplicationsCount } from "@/lib/actions/application";
+import { getPremiumUserById } from "@/lib/api/users";
 
 interface ApplyButtonProps {
   jobId: string;
@@ -45,12 +46,17 @@ export default function ApplyButton({ jobId, jobTitle, companyName }: ApplyButto
       return;
     }
 
+    const premiumResult = await getPremiumUserById(user.id);
+  console.log("Premium:", premiumResult, "Count:", applicantCount);
+
     // ১. আবেদন 6 বা তার বেশি হলে পেমেন্ট পেজে রিডাইরেক্ট করবে
-    if (applicantCount >= 6) {
+    if (!premiumResult.premium &&  applicantCount >= 2) {
       toast.info("Free limit reached. Please complete payment.");
       router.push("/payment"); 
       return;
     }
+
+ 
 
     // ২. না হলে সরাসরি আবেদন সাবমিট হবে
     const result = await applyToJob({
@@ -69,7 +75,7 @@ export default function ApplyButton({ jobId, jobTitle, companyName }: ApplyButto
 
     setApplicantCount((prev) => prev + 1);
     toast.success("Application successful!");
-    router.refresh();
+    router.push("/browse-jobs");
   };
 
   return (
@@ -78,7 +84,7 @@ export default function ApplyButton({ jobId, jobTitle, companyName }: ApplyButto
       disabled={isPending}
       className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition cursor-pointer disabled:opacity-50"
     >
-      {applicantCount >= 10 ? "Pay & Apply" : "Apply Now"}
+      {applicantCount >= 2 ? "Pay & Apply" : "Apply Now"}
     </button>
   );
 }
