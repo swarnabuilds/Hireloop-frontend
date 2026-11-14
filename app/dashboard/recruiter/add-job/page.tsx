@@ -10,11 +10,14 @@ import { Switch } from "@/components/ui/switch"
 import { Loader2, Send } from "lucide-react"
 import { toast } from "sonner"
 import { createJob } from "@/lib/actions/jobs"
+import { useSession } from "@/lib/auth-client"
 
 // Job Data type interface
 export interface JobFormData {
   title: string
   companyName: string
+  companyId?: string
+  recruiterId: string
   category: string
   jobType: string
   isRemote: boolean
@@ -28,6 +31,8 @@ export interface JobFormData {
 }
 
 export default function AddJobPage() {
+
+  const {data: session} = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [jobType, setJobType] = useState("Full-time")
@@ -43,6 +48,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const jobData: JobFormData = {
       title: formData.get("title")?.toString() || "",
       companyName: formData.get("companyName")?.toString() || "",
+     recruiterId: session?.user?.id || "",
       category: formData.get("category")?.toString() || "",
       jobType,
       isRemote,

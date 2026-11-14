@@ -15,7 +15,7 @@ interface ApplicationItem {
   createdAt?: string;
   appliedAt?: string;
   date?: string;
-  [key: string]: unknown; // অতিরিক্ত যেকোনো প্রপার্টি হ্যান্ডেল করার জন্য
+  [key: string]: unknown;  
 }
 
 export default function SeekerApplicationsPage() {

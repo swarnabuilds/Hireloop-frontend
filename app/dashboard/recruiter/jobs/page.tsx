@@ -19,6 +19,8 @@ import {
 
 import { DeleteJobDialog } from "@/app/components/DeleteJobDialog";
 import { UpdateJobDialog } from "./UpdateDialoug";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export interface Job {
   _id: string;
@@ -37,8 +39,11 @@ export interface Job {
 }
 
 export default async function ManageJobsPage() {
+ const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   // Fetch jobs from backend API
-  const jobs: Job[] = await getJobs();
+  const jobs: Job[] = await getJobs(`recruiterId=${session?.user.id}`);
 
   return (
     <div className="min-h-screen w-full space-y-8 bg-black px-6 py-6 text-white">
@@ -154,8 +159,7 @@ export default async function ManageJobsPage() {
             colSpan={7}
             className="py-16 text-center text-xs text-zinc-500"
           >
-            No jobs found in the database. Click "Create Job" to
-            publish a new job.
+           No jobs found in the database. Click &quot;Create Job&quot; to
           </td>
         </tr>
       ) : (
