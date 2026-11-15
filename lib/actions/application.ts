@@ -35,11 +35,28 @@ export interface ActionResponse<T> {
 
 
 export const getApplications = async (query = ""): Promise<Application[]> => {
-  const res = await fetch(`${BASE_URI}/applications?${query}`, {
-    cache: "no-store",
-  });
-  return res.json();
+  try {
+    // query স্ট্রিং-এর শুরুতে যদি '?' থাকে তা রিমোভ করে ইউআরএল তৈরি করা নিরাপদ
+    const cleanQuery = query.startsWith("?") ? query.slice(1) : query;
+    const url = cleanQuery 
+      ? `${BASE_URI}/applications?${cleanQuery}` 
+      : `${BASE_URI}/applications`;
+
+    const res = await fetch(url, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to fetch applications:", error);
+    return [];
+  }
 };
+
 
 //count application
 export const getApplicationsCount = async (query = ""): Promise<{ count: number }> => {
@@ -116,5 +133,27 @@ export async function getUserApplications(
       error instanceof Error ? error.message : "Failed to fetch applications.";
     console.error("Error fetching applications:", errorMessage);
     return { success: false, data: [], message: errorMessage };
+  }
+}
+
+
+export async function updateApplicationStatus(id: string, data: {status: string}) {
+  try {
+    const res = await fetch(
+      `${BASE_URI}/applications/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to update application:", error);
+    return null;
   }
 }

@@ -60,9 +60,9 @@ export default async function JobDetailsPage({
     deadlineDate.setHours(23, 59, 59, 999);
   }
 
-  const isExpired = deadlineDate
-    ? deadlineDate.getTime() < Date.now()
-    : false;
+ const isExpired = deadlineDate?.getTime() 
+  ? deadlineDate.getTime() < Date.now() 
+  : false;
 
   const currentStatus =
     job.status?.toLowerCase() === "closed"

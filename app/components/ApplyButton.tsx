@@ -46,6 +46,11 @@ export default function ApplyButton({ jobId, jobTitle, companyName }: ApplyButto
       return;
     }
 
+    if (user.role !== "seeker") {
+    toast.error("Only job seekers can apply for jobs.");
+    return;
+  }
+
     const premiumResult = await getPremiumUserById(user.id);
   console.log("Premium:", premiumResult, "Count:", applicantCount);
 
