@@ -35,7 +35,7 @@ export default function SignUpPage() {
         email,
         password,
         name,
-        role: role as any,
+        // role: role as any,
         callbackURL: "/signin",
       },
       {

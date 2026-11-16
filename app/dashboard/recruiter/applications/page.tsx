@@ -14,36 +14,11 @@ import {
   UserCheck,
 } from "lucide-react";
 import StatusSelect from "@/components/StatusSelect";
+import { getApplications, Application } from "@/lib/actions/application";  
 
-export interface Application {
-  _id: string;
-  jobId: string;
-  jobTitle: string;
-  companyName: string;
-  userId: string;
-  userName?: string;
-  userEmail?: string;
-  status?: string;
-  createdAt: string;
-}
+// (লোকাল getApplications ফাংশনটি এখান থেকে মুছে ফেলা হয়েছে)
 
-// ব্যাকএন্ড থেকে অ্যাপ্লিকেশন ডেটা ফেচ করা
-async function getApplications(recruiterId?: string): Promise<Application[]> {
-  try {
-    const query = recruiterId ? `?recruiterId=${recruiterId}` : "";
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/applications${query}`,
-      { cache: "no-store" }
-    );
-    if (!res.ok) return [];
-    return await res.json();
-  } catch (error) {
-    console.error("Failed to fetch applications:", error);
-    return [];
-  }
-}
-
-// স্ট্যাটাস অনুযায়ী আলাদা রঙ এবং আইকন রিটার্ন করার হেল্পার ফাংশন
+// স্ট্যাটাস অনুযায়ী আলাদা রঙ এবং আইকন রিটার্ন করার হেল্পার ফাংশন
 function getStatusBadge(rawStatus?: string) {
   const status = !rawStatus || rawStatus.toLowerCase() === "pending" ? "Applied" : rawStatus;
 
@@ -94,7 +69,11 @@ export default async function ApplicationsPage() {
   });
 
   const recruiterId = session?.user?.id;
-  const applications: Application[] = await getApplications(recruiterId);
+  
+  // এখন এটি lib/actions/application.ts এর authFetch যুক্ত গেট অ্যাপ্লিকেশন কল করবে
+  const applications: Application[] = await getApplications(
+    recruiterId ? `recruiterId=${recruiterId}` : ""
+  );
 
   return (
     <div className="min-h-screen w-full space-y-8 bg-[#09090b] px-6 py-8 text-white">

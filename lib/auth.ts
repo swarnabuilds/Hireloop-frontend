@@ -29,6 +29,7 @@ export const auth = betterAuth({
     },
   },
 
+  //select admin role
   plugins: [admin()],
 
   database: mongodbAdapter(db, {

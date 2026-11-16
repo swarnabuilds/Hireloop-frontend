@@ -1,4 +1,4 @@
-import { requreRole } from "@/lib/api/users";
+import { requreRole } from "@/lib/core/server";
 
 const SeekerDashboadLayout = async ({
   children,

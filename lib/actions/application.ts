@@ -1,3 +1,6 @@
+"use server"
+import { authFetch } from "../core/server";
+
 const BASE_URI = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
 // ইনপুট ডেটার টাইপ
@@ -33,18 +36,18 @@ export interface ActionResponse<T> {
   message?: string;
 }
 
+ 
 
 export const getApplications = async (query = ""): Promise<Application[]> => {
   try {
-    // query স্ট্রিং-এর শুরুতে যদি '?' থাকে তা রিমোভ করে ইউআরএল তৈরি করা নিরাপদ
+    // query স্ট্রিং-এর শুরুতে যদি '?' থাকে তা রিমুভ করে ইউআরএল তৈরি করা নিরাপদ
     const cleanQuery = query.startsWith("?") ? query.slice(1) : query;
-    const url = cleanQuery 
-      ? `${BASE_URI}/applications?${cleanQuery}` 
+    const url = cleanQuery
+      ? `${BASE_URI}/applications?${cleanQuery}`
       : `${BASE_URI}/applications`;
 
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
+    // authFetch নিজে থেকেই getToken() কল করে Authorization header যুক্ত করে দেবে
+    const res = await authFetch(url);
 
     if (!res.ok) {
       return [];
@@ -109,29 +112,22 @@ export async function applyToJob(
 }
 
 // ২. নির্দিষ্ট ইউজারের অ্যাপ্লিকেশনগুলো ফেচ করার ফাংশন
-export async function getUserApplications(
-  userId: string
-): Promise<ActionResponse<Application[]>> {
+export async function getUserApplications(userId: string): Promise<ActionResponse<Application[]>> {
   try {
-    const response = await fetch(`${BASE_URI}/applications?userId=${userId}`, {
-      method: "GET",
-      cache: "no-store",
-    });
-
-    const data = await response.json();
-
+    // সাধারণ fetch এর বদলে authFetch ব্যবহার করতে হবে যাতে টোকেন পাস হয়
+    const response = await authFetch(`${BASE_URI}/applications?userId=${userId}`);
+    
     if (!response.ok) {
-      throw new Error(data.message || "Failed to fetch applications.");
+      throw new Error("Failed to fetch applications.");
     }
 
+    const data = await response.json();
     return {
       success: true,
       data: Array.isArray(data) ? (data as Application[]) : [],
     };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to fetch applications.";
-    console.error("Error fetching applications:", errorMessage);
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch applications.";
     return { success: false, data: [], message: errorMessage };
   }
 }

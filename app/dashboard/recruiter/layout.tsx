@@ -1,5 +1,5 @@
+import { requreRole } from "@/lib/core/server";
 import React from "react";
-import { requreRole } from "@/lib/api/users";
 
 const RecruiterDashboadLayout = async ({
   children,
