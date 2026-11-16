@@ -1,3 +1,4 @@
+
 const BASE_URI = process.env.NEXT_PUBLIC_API_BASE_URL
 
 
@@ -13,3 +14,5 @@ export const updateUserRole = async (userId: string, role: string) => {
 
     return res.json(); 
 };
+
+

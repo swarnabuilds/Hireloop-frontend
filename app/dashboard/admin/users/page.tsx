@@ -1,6 +1,6 @@
-import { getUsers } from "@/lib/api/users";
 import { Shield, Briefcase, User as UserIcon } from "lucide-react";
 import RoleToggleButtons from "@/components/RoleToggleButtons";
+import { getUsers } from "@/lib/api/adminUsersRole";
 
 // ইউজারের জন্য টাইপ ইন্টারফেস
 interface UserItem {
