@@ -1,16 +1,12 @@
+"use server"
 import { JobFormData } from "@/app/dashboard/recruiter/add-job/page";
+import { protectedMutation } from "../core/server";
 
 const BASE_URI = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const createJob = async (data: JobFormData) => {
-  const res = await fetch(`${BASE_URI}/jobs`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
+  const api = `${BASE_URI}/jobs` ;
+  const res = await protectedMutation(api, "POST", data)
   return res.json();
 };
 

@@ -1,5 +1,5 @@
 "use server"
-import { authFetch } from "../core/server";
+import { authFetch, protectedMutation } from "../core/server";
 
 const BASE_URI = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -76,25 +76,23 @@ export const getApplicationsCount = async (query = ""): Promise<{ count: number 
 };
 
 // ১. জবে আবেদন করার অ্যাকশন
+ 
+
 export async function applyToJob(
   applicationData: ApplyJobInput
 ): Promise<ActionResponse<{ insertedId: string; acknowledged: boolean }>> {
   try {
     const payload = {
       ...applicationData,
-      // যদি আলাদা applicantId না পাঠানো হয়, তবে userId-ই applicantId হিসেবে সেভ হবে
+      // যদি আলাদা applicantId না পাঠানো হয়, তবে userId-ই applicantId হিসেবে সেভ হবে
       applicantId: applicationData.applicantId || applicationData.userId,
       status: "Pending",
       createdAt: new Date().toISOString(),
     };
 
-    const response = await fetch(`${BASE_URI}/applications`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const api = `${BASE_URI}/applications`;
+    // protectedMutation ব্যবহার করে POST রিকোয়েস্ট পাঠানো হলো
+    const response = await protectedMutation(api, "POST", payload);
 
     const data = await response.json();
 
@@ -110,6 +108,7 @@ export async function applyToJob(
     return { success: false, message: errorMessage };
   }
 }
+
 
 // ২. নির্দিষ্ট ইউজারের অ্যাপ্লিকেশনগুলো ফেচ করার ফাংশন
 export async function getUserApplications(userId: string): Promise<ActionResponse<Application[]>> {
@@ -133,18 +132,13 @@ export async function getUserApplications(userId: string): Promise<ActionRespons
 }
 
 
-export async function updateApplicationStatus(id: string, data: {status: string}) {
+//update application status
+export async function updateApplicationStatus(id: string, data: { status: string }) {
   try {
-    const res = await fetch(
-      `${BASE_URI}/applications/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const api = `${BASE_URI}/applications/${id}`;
+    
+    // সাধারণ fetch-এর বদলে সরাসরি protectedMutation ব্যবহার করা হলো
+    const res = await protectedMutation(api, "PATCH", data);
 
     if (!res.ok) return null;
     return await res.json();
